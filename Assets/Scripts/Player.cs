@@ -16,6 +16,7 @@ public class Player : MonoBehaviour
     public bool invincible = false;
 
     public Text _TreasureCountText;
+    public Text _HealthCountText;
 
     TankController _tankController;
 
@@ -27,6 +28,8 @@ public class Player : MonoBehaviour
     private void Start()
     {
         _currentHealth = _maxHealth;
+        SetHealthCountText();
+        SetTreasureCountText();
     }
 
     public void IncreaseHealth(int amount)
@@ -34,16 +37,21 @@ public class Player : MonoBehaviour
         _currentHealth = _currentHealth + amount;
         _currentHealth = Mathf.Clamp(_currentHealth, 0, _maxHealth);
         Debug.Log("Player's health: " + _currentHealth);
+        SetHealthCountText();
     }
 
     public void DecreaseHealth(int amount)
     {
-        _currentHealth -= amount;
-        Debug.Log("Player's health: " + _currentHealth);
-        if(_currentHealth <= 0)
+        if (invincible == false)
         {
-            Kill();
+            _currentHealth -= amount;
+            Debug.Log("Player's health: " + _currentHealth);
+            if (_currentHealth <= 0)
+            {
+                Kill();
+            }
         }
+        SetHealthCountText();
     }
 
     public void TreasureCount(int amount)
@@ -51,6 +59,16 @@ public class Player : MonoBehaviour
         _currentTreasure = _currentTreasure + amount;
         Debug.Log("Player's treasure: " + _currentTreasure);
         SetTreasureCountText();
+    }
+
+    void SetTreasureCountText()
+    {
+        _TreasureCountText.text = "Treasure: " + _currentTreasure;
+    }
+
+    void SetHealthCountText()
+    {
+        _HealthCountText.text = "Health: " + _currentHealth;
     }
 
     public void Kill()
@@ -79,10 +97,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    void SetTreasureCountText()
-    {
-        _TreasureCountText.text = "Treasure: " + _currentTreasure;
-    }
+   
 
 }
 

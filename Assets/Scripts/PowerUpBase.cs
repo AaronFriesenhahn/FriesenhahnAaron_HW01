@@ -4,27 +4,84 @@ using UnityEngine;
 
 public abstract class PowerUpBase : MonoBehaviour
 {
-    [SerializeField] float _PowerUpDuration = 2;
+    [SerializeField] public float _PowerUpDuration = 2;
+    [SerializeField] ParticleSystem _collectParticles;
+    [SerializeField] AudioClip _collectSound;
+    [SerializeField] AudioClip _powerDownSound;
     protected abstract void PowerUp(Player player);
     protected abstract void PowerDown(Player player);
+    [SerializeField] float _movementSpeed = -1;
 
+    Rigidbody _rb;
+
+    private void Awake()
+    {
+        _rb = GetComponent<Rigidbody>();
+    }
+
+    private void FixedUpdate()
+    {
+        Movement(_rb);
+    }
+
+    protected virtual void Movement(Rigidbody rb)
+    {
+        //calculate rotation
+        Quaternion turnOffset = Quaternion.Euler(0, _movementSpeed, 0);
+        rb.MoveRotation(_rb.rotation * turnOffset);
+    }
 
     private void OnTriggerEnter(Collider other)
     {
         Player player = other.gameObject.GetComponent<Player>();
         if (player != null)
         {
+            Feedback();
             PowerUp(player);
             //disable collider and visuals
-            
-            //call PowerDown funtion after PowerUp duration is over and disable game object
-            _PowerUpDuration -= Time.deltaTime;
-            if (_PowerUpDuration < 0)
+            var powerupMesh = gameObject.GetComponent<MeshRenderer>();
+            var powerupCollider = gameObject.GetComponent<Collider>();
+            powerupMesh.enabled = false;
+            powerupCollider.enabled = false;
+
+            IEnumerator PowerUpCountdown()
             {
-                
-                PowerDown(player);
+                while (_PowerUpDuration > 0)
+                {
+                    yield return new WaitForSeconds(1f);
+
+                    _PowerUpDuration--;
+                }
+
+                if (_PowerUpDuration <= 0)
+                {
+                    if (_powerDownSound != null)
+                    {
+                        AudioHelper.PlayClip2D(_powerDownSound, 1f);
+                    }
+                    _PowerUpDuration = 0;
+                    PowerDown(player);
+                }
             }
-            gameObject.SetActive(false);
+            //call PowerDown funtion after PowerUp duration is over and disable game object
+            StartCoroutine(PowerUpCountdown());
         }
     }
+
+    private void Feedback()
+    {
+        //particles
+        if (_collectParticles != null)
+        {
+            _collectParticles = Instantiate(_collectParticles,
+                transform.position, Quaternion.identity);
+        }
+        //audio
+        if (_collectSound != null)
+        {
+            AudioHelper.PlayClip2D(_collectSound, 1f);
+        }
+        
+    }
+
 }

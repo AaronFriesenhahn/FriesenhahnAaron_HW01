@@ -4,17 +4,16 @@ using UnityEngine;
 
 public class Invincibility : PowerUpBase
 {
+    [SerializeField] GameObject _playerObject;
     [SerializeField] Material _playerMaterial;
     [SerializeField] Material _InvincibleMaterial;
-    Material _temporaryMaterial;
 
     protected override void PowerUp(Player player)
     {
         //make player invincible
         player.invincible = true;
         //change player color to Cyan
-        _temporaryMaterial = _playerMaterial;
-        _playerMaterial = _InvincibleMaterial;
+        _playerObject.GetComponent<MeshRenderer>().material = _InvincibleMaterial;
     }
 
     protected override void PowerDown(Player player)
@@ -22,6 +21,7 @@ public class Invincibility : PowerUpBase
         //return player to normal
         player.invincible = false;
         //change player color to normal
-        _playerMaterial = _temporaryMaterial;
+        _playerObject.GetComponent<MeshRenderer>().material = _playerMaterial;
+        gameObject.SetActive(false);
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(TankController))]
 public class Player : MonoBehaviour
@@ -11,6 +12,10 @@ public class Player : MonoBehaviour
     int _currentTreasure;
     [SerializeField] ParticleSystem _deathParticles;
     [SerializeField] AudioClip _deathSound;
+
+    public bool invincible = false;
+
+    public Text _TreasureCountText;
 
     TankController _tankController;
 
@@ -45,13 +50,18 @@ public class Player : MonoBehaviour
     {
         _currentTreasure = _currentTreasure + amount;
         Debug.Log("Player's treasure: " + _currentTreasure);
+        SetTreasureCountText();
     }
 
     public void Kill()
     {
-        gameObject.SetActive(false);
-        //play particles and sound
-        Feedback();
+        if (invincible == false)
+        {
+            gameObject.SetActive(false);
+            //play particles and sound
+            Feedback();
+        }
+        
     }
 
     private void Feedback()
@@ -67,6 +77,11 @@ public class Player : MonoBehaviour
         {
             AudioHelper.PlayClip2D(_deathSound, 1f);
         }
+    }
+
+    void SetTreasureCountText()
+    {
+        _TreasureCountText.text = "Treasure: " + _currentTreasure;
     }
 
 }

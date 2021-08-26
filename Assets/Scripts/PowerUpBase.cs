@@ -12,6 +12,7 @@ public abstract class PowerUpBase : MonoBehaviour
     protected abstract void PowerDown(Player player);
     [SerializeField] float _movementSpeed = -1;
 
+    float _originalPowerUpDuration;
     Rigidbody _rb;
 
     private void Awake()
@@ -44,6 +45,8 @@ public abstract class PowerUpBase : MonoBehaviour
             powerupMesh.enabled = false;
             powerupCollider.enabled = false;
 
+            _originalPowerUpDuration = _PowerUpDuration;
+
             IEnumerator PowerUpCountdown()
             {
                 while (_PowerUpDuration > 0)
@@ -66,6 +69,7 @@ public abstract class PowerUpBase : MonoBehaviour
             //call PowerDown funtion after PowerUp duration is over and disable game object
             StartCoroutine(PowerUpCountdown());
         }
+        _PowerUpDuration = _originalPowerUpDuration;
     }
 
     private void Feedback()

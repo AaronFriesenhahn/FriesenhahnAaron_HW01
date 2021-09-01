@@ -79,7 +79,6 @@ public class Player : MonoBehaviour
             //play particles and sound
             Feedback();
         }
-        
     }
 
     private void Feedback()
@@ -96,8 +95,5 @@ public class Player : MonoBehaviour
             AudioHelper.PlayClip2D(_deathSound, 1f);
         }
     }
-
-   
-
 }
 

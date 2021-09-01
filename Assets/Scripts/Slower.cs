@@ -16,14 +16,9 @@ public class Slower : Enemy
     {
         //pull motor controller from the player
         TankController controller = player.GetComponent<TankController>();
-
-        //set _originalMoveSpeed only once
-        if (x == 0)
-        {
-            _originalMoveSpeed = controller.MoveSpeed;
-        }
-
+        _originalMoveSpeed = controller.MoveSpeed;
         _originalPowerUpDuration = _PowerUpDuration;
+        
         if (controller != null)
         {
             x = 1;
@@ -35,11 +30,16 @@ public class Slower : Enemy
             {
                 controller.MoveSpeed = 0.02f;
             }
+
+            //call PowerDown funtion after PowerUp duration is over and disable game object
+            StartCoroutine(PowerUpCountdown());
+
             //timer that restores the player to their normal speed
             IEnumerator PowerUpCountdown()
             {
                 while (_PowerUpDuration > 0)
                 {
+                    Debug.Log("Slower Powerup Countdown Starting.");
                     yield return new WaitForSeconds(1f);
 
                     _PowerUpDuration--;
@@ -51,14 +51,12 @@ public class Slower : Enemy
                     {
                         AudioHelper.PlayClip2D(_powerUpSound, 1f);
                     }
-                    _PowerUpDuration = 0;
+                    Debug.Log("Slower Powerup Countdown has ended.");
                     controller.MoveSpeed = _originalMoveSpeed;
                     _PowerUpDuration = _originalPowerUpDuration;
-                    x = 0;
+                    Debug.Log("PowerUpDuration: " + _PowerUpDuration);
                 }
             }
-            //call PowerDown funtion after PowerUp duration is over and disable game object
-            StartCoroutine(PowerUpCountdown());
         }
     }
 }

@@ -37,10 +37,15 @@ public abstract class CollectibleBase : MonoBehaviour
         if(player != null)
         {
             Collect(player);
+            //get mesh of Collectable
+            var powerupMesh = gameObject.GetComponent<MeshRenderer>();
+            var powerupCollider = gameObject.GetComponent<Collider>();
             //spawn particles & sfx because we need to disable object
             Feedback();
 
-            gameObject.SetActive(false);
+            //gameObject.SetActive(false);
+            powerupMesh.enabled = false;
+            powerupCollider.enabled = false;            
         }
     }
 
